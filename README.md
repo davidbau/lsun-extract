@@ -1,5 +1,11 @@
 # LSUN
 
+## Derived branch
+
+This repo is derived from the official LSUN release.  It just extracts LSUN
+into a slightly different directory structure than the original code,
+and it adds scripts for downloading the data from Fisher Yu's website.
+
 Please check [LSUN webpage](http://www.yf.io/p/lsun) for more information about the dataset.
 
 ## Data Release
