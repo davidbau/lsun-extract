@@ -30,7 +30,7 @@ def view(db_path):
                 break
 
 
-def export_images(db_path, out_dir, flat=False, limit=-1):
+def export_images(db_path, out_dir, flat=False, ext='jpg', limit=-1):
     print('Exporting', db_path, 'to', out_dir)
     env = lmdb.open(db_path, map_size=1099511627776,
                     max_readers=100, readonly=True)
@@ -39,13 +39,15 @@ def export_images(db_path, out_dir, flat=False, limit=-1):
         cursor = txn.cursor()
         for key, val in cursor:
             if not flat:
-                image_out_dir = join(out_dir, '/'.join(key[:6]))
+                # too many nested directories
+                # image_out_dir = join(out_dir, '/'.join(key[:6]))
+                image_out_dir = join(out_dir, key[:3].decode('ascii'))
             else:
                 image_out_dir = out_dir
             if not exists(image_out_dir):
                 os.makedirs(image_out_dir)
-            image_out_path = join(image_out_dir, key + '.webp')
-            with open(image_out_path, 'w') as fp:
+            image_out_path = join(image_out_dir, key.decode('ascii') + '.' + ext)
+            with open(image_out_path, 'wb') as fp:
                 fp.write(val)
             count += 1
             if count == limit:
@@ -66,6 +68,7 @@ def main():
     parser.add_argument('lmdb_path', nargs='+', type=str,
                         help='The path to the lmdb database folder. '
                              'Support multiple database paths.')
+    parser.add_argument('--ext', type=str, default='jpg')
     parser.add_argument('--out_dir', type=str, default='')
     parser.add_argument('--flat', action='store_true',
                         help='If enabled, the images are imported into output '
